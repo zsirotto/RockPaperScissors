@@ -1,99 +1,67 @@
-import random
+from random import randint
 
 
-### BUGS TO FIX:
-# paper and scissors player choices cause the result to return 3 extra times, and not print the updated win count, nor update the numbers. --DONE
-# "incorrect input" function is no longer working, instead of always activating. --DONE
-#  after using an incorrect input, only asks for a new one but doesnt apply it -- DONE
+# Used to map random ints to Rock, Paper, Scissors.
+rps = {
+    1: 'Rock',
+    2: 'Paper',
+    3: 'Scissors'
+}
 
-def intToRPS(randomint):
-    answer = ""
-    if randomint == 1:
-        answer = "Rock"
-    elif randomint == 2:
-        answer = 'Paper'
-    elif randomint == 3:
-        answer = "Scissors"
-    return answer
+# Rock beats scissors, paper beats rock, scissors beats paper.
+priority = {
+    'Rock': 'Scissors',
+    'Paper': 'Rock',
+    'Scissors': 'Paper'
+}
 
-def whoWins(comp, player):      # takes the variable 'comp' that comes from intToRPS() and variable 'player' from playerChoice() and returns the winner of the game
-    answer = ''
-    
-    if comp == "Rock":
-        if player == "Rock":
-            answer = "It's a tie!"
-        elif player == "Paper":
-            answer = "Player wins!"
-        elif player == "Scissors":
-            answer = "Player loses!"
-    elif comp == "Paper":
-        if player == "Rock":
-            answer = "Player loses!"
-        elif player == "Paper":
-            answer = "It's a tie!"
-        elif player == "Scissors":
-            answer = "Player wins!"
-    elif comp == "Scissors":
-        if player == "Rock":
-            answer = "Player wins!"
-        elif player == "Paper":
-            answer = "Player loses!"
-        elif player == "Scissors":
-            answer = "It's a tie!"
-    return answer
 
-def playerChoice():         ##This allows the player to input their own choice and holds it in the variable p to use later.
-    p = input(str("Rock, Paper, or Scissors?"))
-    p = p.capitalize()
-    #return p
-    if p != "Rock" and p != "Paper" and p != "Scissors":
-        print("Incorrect input.")
-        return(playerChoice())
+def whoWon(computer, player):
+    '''Returns winner of the game.'''
+    if priority[player] == computer:
+        return 'Player wins!'
+    elif priority[computer] == player:
+        return 'Player loses!'
+    elif computer == player:
+        return 'It\'s a tie!'
+
+
+def playerChoice():
+    '''Reads input for user's choice.'''
+    i = int(input('- 1 for Rock\n- 2 for Paper\n- 3 for Scissors\n\nSelection: '))
+    if i not in rps:
+        print('Incorrect input. Must choose 1, 2, or 3.\n')
+        return playerChoice()
     else:
-       return(p)
+        return rps[i]
+
 
 def main():
-    count = 0
-    countlose = 0
-    countTie = 0
-    op = random.randint(1, 3)
-
-    player = playerChoice()
-    cpu = intToRPS(op)
-    print("Computer chose:", cpu)
-
-    print(whoWins(cpu, player))
-    if whoWins(cpu, player) == "Player wins!":
-        count += 1
-        print("Player wins:", count, ",", "Player losses:", countlose, ",", "Ties:", countTie)
-    elif whoWins(cpu, player) == "Player loses!":
-        countlose += 1
-        print("Player wins:", count, ",", "Player losses:", countlose, ",", "Ties:", countTie)
-    elif whoWins(cpu, player) == "It's a tie!":
-        countTie += 1
-        print("Player wins:", count, ",", "Player losses:", countlose, ",", "Ties:", countTie)
-
-    
-    while input("Play again? (Y/N) ").upper() == "Y":
-        op = random.randint(1, 3)
-
+    '''Runs main game loop.'''
+    wins, losses, ties = 0, 0, 0
+    print('Welcome to tic tac toe!\n')
+    while True:
         player = playerChoice()
-        cpu = intToRPS(op)
-        print("Computer chose:", cpu)
+        cpu = rps[randint(1, 3)]
+        result = whoWon(cpu, player)
+        print('\nPlayer choice:', player)
+        print('Computer choice:', cpu)
+        print(result)
+        if result == 'Player wins!':
+            wins += 1
+        elif result == 'Player loses!':
+            losses += 1
+        elif result == 'It\'s a tie!':
+            ties += 1
+        print(' ______________________')
+        print('| Wins | Losses | Ties |')
+        # uses f string mini language
+        # see https://docs.python.org/2/library/string.html#formatstrings
+        print('|{: ^6}|{: ^8}|{: ^6}|'.format(wins, losses, ties))
+        print(' ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾')
+        if input('Play again? (Y/N) ').upper() == 'N':
+            break
 
-        print(whoWins(cpu, player))
-        if whoWins(cpu, player) == "Player wins!":
-            count += 1
-            print("Player wins:", count, ",", "Player losses:", countlose, ",", "Ties:", countTie)
-        elif whoWins(cpu, player) == "Player loses!":
-            countlose += 1
-            print("Player wins:", count, ",", "Player losses:", countlose, ",", "Ties:", countTie)
-        elif whoWins(cpu, player) == "It's a tie!":
-            countTie += 1
-            print("Player wins:", count, ",", "Player losses:", countlose, ",", "Ties:", countTie)
 
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
-
